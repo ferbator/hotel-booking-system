@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-public class BookingDtos {
+public class BookingDto {
     public record CreateBookingRequest(
             Long roomId,
             @NotNull LocalDate startDate,

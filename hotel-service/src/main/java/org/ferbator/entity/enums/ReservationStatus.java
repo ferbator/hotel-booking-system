@@ -1,4 +1,4 @@
-package com.meeweel.hotel.model;
+package org.ferbator.entity.enums;
 
 public enum ReservationStatus {
     HELD,

@@ -1,3 +1,3 @@
-package org.ferbator.entities.enums;
+package org.ferbator.entity.enums;
 
-public enum Role { ROLE_USER, ROLE_ADMIN }
+public enum Role {USER, ADMIN}

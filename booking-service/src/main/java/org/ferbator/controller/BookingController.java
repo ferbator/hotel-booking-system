@@ -1,28 +1,27 @@
-package com.meeweel.booking.controller;
+package org.ferbator.controller;
 
-import com.meeweel.booking.client.HotelClient;
-import com.meeweel.booking.dto.BookingDtos.CreateBookingRequest;
-import com.meeweel.booking.model.Booking;
-import com.meeweel.booking.repo.BookingRepository;
-import com.meeweel.booking.repo.UserRepository;
-import com.meeweel.booking.service.BookingServiceCore;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.ferbator.dto.BookingDto;
+import org.ferbator.entity.Booking;
+import org.ferbator.repository.UserRepository;
+import org.ferbator.service.BookingService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 public class BookingController {
-    private final BookingServiceCore core;
-    private final UserRepository users;
-    private final BookingRepository bookings;
-    private final HotelClient hotelClient;
+    private final BookingService bookingService;
+    private final UserRepository userRepository;
 
     private String bearer(Jwt jwt) {
         return "Bearer " + jwt.getTokenValue();
@@ -31,26 +30,17 @@ public class BookingController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @PostMapping("/booking")
     public Booking create(
-            @Valid @RequestBody CreateBookingRequest req,
+            @Valid @RequestBody BookingDto.CreateBookingRequest req,
             @AuthenticationPrincipal Jwt jwt
     ) {
-        var user = users.findByUsername(jwt.getSubject()).orElseThrow();
-        Long roomId = req.roomId();
-        if (req.autoSelect()) {
-            var rec = hotelClient.recommend(req.startDate(), req.endDate(), bearer(jwt));
-            if (rec.isEmpty()) throw new IllegalArgumentException("No rooms available");
-            roomId = rec.getFirst().id();
-        }
+        var user = userRepository.findByUsername(jwt.getSubject())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "User not found"
+                ));
 
-        if (!req.startDate().isBefore(req.endDate())) throw new IllegalArgumentException("startDate must be before endDate");
-        if (req.startDate().isBefore(java.time.LocalDate.now())) throw new IllegalArgumentException("startDate in the past");
-
-        return core.createBooking(
+        return bookingService.createBooking(
                 user.getId(),
-                roomId,
-                req.startDate(),
-                req.endDate(),
-                req.requestId(),
+                req,
                 bearer(jwt)
         );
     }
@@ -58,8 +48,12 @@ public class BookingController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/bookings")
     public List<Booking> my(@AuthenticationPrincipal Jwt jwt) {
-        var user = users.findByUsername(jwt.getSubject()).orElseThrow();
-        return bookings.findByUserId(user.getId());
+        var user = userRepository.findByUsername(jwt.getSubject())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "User not found"
+                ));
+
+        return bookingService.getUserBookings(user.getId());
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -67,27 +61,27 @@ public class BookingController {
     public Booking one(
             @PathVariable Long id,
             @AuthenticationPrincipal Jwt jwt
-    ) {
-        var user = users.findByUsername(jwt.getSubject()).orElseThrow();
-        var b = bookings.findById(id).orElseThrow();
-        if (!b.getUserId().equals(user.getId()))
-            throw new org.springframework.security.access.AccessDeniedException("Forbidden");
-        return b;
+    ) throws AccessDeniedException {
+        var user = userRepository.findByUsername(jwt.getSubject())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "User not found"
+                ));
+
+        return bookingService.getBooking(id, user.getId());
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @DeleteMapping("/booking/{id}")
-    public Map<String, String> cancel(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
-        var user = users.findByUsername(jwt.getSubject()).orElseThrow();
-        var b = bookings.findById(id).orElseThrow();
-        if (!b.getUserId().equals(user.getId()))
-            throw new org.springframework.security.access.AccessDeniedException("Forbidden");
-        try {
-            hotelClient.release(b.getRoomId(), b.getRequestId(), bearer(jwt)).join();
-        } catch (Exception ignored) {
-        }
-        b.setStatus(com.meeweel.booking.model.BookingStatus.CANCELLED);
-        bookings.save(b);
+    public Map<String, String> cancel(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Jwt jwt
+    ) throws AccessDeniedException {
+        var user = userRepository.findByUsername(jwt.getSubject())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "User not found"
+                ));
+
+        bookingService.cancelBooking(id, user.getId(), bearer(jwt));
         return Map.of("status", "cancelled");
     }
 }

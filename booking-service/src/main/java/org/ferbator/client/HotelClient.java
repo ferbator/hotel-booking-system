@@ -1,4 +1,4 @@
-package com.meeweel.booking.client;
+package org.ferbator.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;

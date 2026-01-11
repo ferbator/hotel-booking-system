@@ -1,6 +1,7 @@
-package com.meeweel.booking.service;
+package org.ferbator.service;
 
-import com.meeweel.booking.model.Role;
+
+import org.ferbator.entity.enums.Role;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;

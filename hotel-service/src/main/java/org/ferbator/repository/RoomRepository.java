@@ -1,7 +1,7 @@
-package com.meeweel.hotel.repo;
+package org.ferbator.repository;
 
-import com.meeweel.hotel.entity.Room;
 import jakarta.persistence.LockModeType;
+import org.ferbator.entity.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;

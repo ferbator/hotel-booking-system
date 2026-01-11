@@ -1,10 +1,16 @@
-package org.ferbator.entities;
+package org.ferbator.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.ferbator.entities.enums.Role;
+import lombok.NoArgsConstructor;
+import org.ferbator.entity.enums.Role;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "users")
 @Data
 public class User {

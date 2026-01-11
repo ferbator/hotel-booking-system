@@ -1,5 +1,15 @@
+### 0)
+POST http://localhost:8081/user/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+
 ### 1) Регистрация (получаем токен)
-POST http://localhost:8080/auth/register
+POST http://localhost:8080/user/auth/register
 Content-Type: application/json
 
 {
@@ -9,11 +19,11 @@ Content-Type: application/json
 
 ### 2) Рекомендации номеров (вставь токен вместо <TOKEN>)
 GET http://localhost:8080/api/rooms/recommend?start=2025-10-26&end=2025-10-28
-Authorization: Bearer <TOKEN>
+Authorization: dev-UNSAFE-default-change-me-1234567890
 
 ### 3) Создать бронирование (идемпотентный requestId)
 POST http://localhost:8080/booking
-Authorization: Bearer <TOKEN>
+Authorization: dev-UNSAFE-default-change-me-1234567890
 Content-Type: application/json
 
 {
@@ -26,7 +36,7 @@ Content-Type: application/json
 
 ### 4) Повтор с тем же requestId (дубля не будет)
 POST http://localhost:8080/booking
-Authorization: Bearer <TOKEN>
+Authorization: dev-UNSAFE-default-change-me-1234567890
 Content-Type: application/json
 
 {
@@ -39,4 +49,4 @@ Content-Type: application/json
 
 ### 5) Мои бронирования
 GET http://localhost:8080/bookings
-Authorization: Bearer <TOKEN>
+Authorization: dev-UNSAFE-default-change-me-1234567890

@@ -1,13 +1,19 @@
-package org.ferbator.entities;
+package org.ferbator.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.ferbator.entities.enums.BookingStatus;
+import lombok.NoArgsConstructor;
+import org.ferbator.entity.enums.BookingStatus;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Data
 public class Booking {
     @Id

@@ -1,9 +1,9 @@
-package com.meeweel.hotel.controller;
+package org.ferbator.controller;
 
-import com.meeweel.hotel.dto.AvailabilityRequest;
-import com.meeweel.hotel.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.ferbator.dto.AvailabilityRequest;
+import org.ferbator.service.RoomService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.meeweel.booking.client;
+package org.ferbator.client;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

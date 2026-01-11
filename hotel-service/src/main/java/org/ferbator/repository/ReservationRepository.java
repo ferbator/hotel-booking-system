@@ -1,7 +1,7 @@
-package com.meeweel.hotel.repo;
+package org.ferbator.repository;
 
-import com.meeweel.hotel.entity.ReservationStatus;
-import com.meeweel.hotel.entity.RoomReservation;
+import org.ferbator.entity.Reservation;
+import org.ferbator.entity.enums.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,11 +10,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface RoomReservationRepo extends JpaRepository<RoomReservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    Optional<RoomReservation> findByRoomIdAndRequestId(Long roomId, String requestId);
+    Optional<Reservation> findByRoomIdAndRequestId(Long roomId, String requestId);
 
-    @Query("select (count(r)>0) from RoomReservation r " +
+    @Query("select (count(r)>0) from Reservation r " +
             "where r.roomId = :roomId and r.status in :statuses " +
             "and not (r.endDate <= :start or r.startDate >= :end)")
     boolean existsOverlap(

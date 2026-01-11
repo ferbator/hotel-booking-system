@@ -1,4 +1,4 @@
-package com.meeweel.hotel.dto;
+package org.ferbator.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

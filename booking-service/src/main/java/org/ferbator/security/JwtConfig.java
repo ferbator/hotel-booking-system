@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Configuration
-public class JwtBeansConfig {
+public class JwtConfig {
 
     private SecretKey hmacKey(String secret) {
         byte[] keyBytes;

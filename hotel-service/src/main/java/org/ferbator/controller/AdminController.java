@@ -1,12 +1,11 @@
-package com.meeweel.hotel.controller;
+package org.ferbator.controller;
 
-import com.meeweel.hotel.dto.CreateHotelDto;
-import com.meeweel.hotel.dto.CreateRoomDto;
-import com.meeweel.hotel.entity.Hotel;
-import com.meeweel.hotel.repository.HotelRepo;
-import com.meeweel.hotel.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.ferbator.dto.CreateHotelDto;
+import org.ferbator.dto.CreateRoomDto;
+import org.ferbator.entity.Hotel;
+import org.ferbator.service.RoomService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,23 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AdminController {
-    private final HotelRepo hotels;
-    private final RoomService rooms;
+    private final RoomService roomService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/hotels")
     public Hotel createHotel(@Valid @RequestBody CreateHotelDto dto) {
-        return hotels.save(
-                Hotel.builder()
-                        .name(dto.name())
-                        .address(dto.address())
-                        .build()
-        );
+        return roomService.createHotel(dto.name(), dto.address());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rooms")
     public Object createRoom(@Valid @RequestBody CreateRoomDto dto) {
-        return rooms.createRoom(dto.hotelId(), dto.number(), dto.available());
+        return roomService.createRoom(dto.hotelId(), dto.number(), dto.available());
     }
 }

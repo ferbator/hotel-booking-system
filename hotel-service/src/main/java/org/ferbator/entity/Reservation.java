@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Table(indexes = {@Index(name = "idx_room_request", columnList = "roomId,requestId", unique = true)})
-public class RoomReservation {
+public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

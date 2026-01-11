@@ -1,4 +1,4 @@
-package com.meeweel.gateway.filter;
+package org.ferbator.filter;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;

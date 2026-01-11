@@ -1,8 +1,8 @@
-package com.meeweel.booking.service;
+package org.ferbator.service;
 
-import com.meeweel.booking.model.Role;
-import com.meeweel.booking.model.User;
-import com.meeweel.booking.repo.UserRepository;
+import org.ferbator.entity.enums.Role;
+import org.ferbator.entity.User;
+import org.ferbator.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

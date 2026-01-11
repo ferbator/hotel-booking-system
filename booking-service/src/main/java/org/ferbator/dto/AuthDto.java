@@ -2,7 +2,7 @@ package org.ferbator.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class AuthDtos {
+public class AuthDto {
     public record RegisterRequest(@NotBlank String username, @NotBlank String password) {
     }
 

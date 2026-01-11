@@ -1,4 +1,4 @@
-package com.meeweel.hotel.dto;
+package org.ferbator.dto;
 
 public record RoomDto(
         Long id,

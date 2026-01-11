@@ -1,4 +1,4 @@
-package org.ferbator.repositories;
+package org.ferbator.repository;
 
 import org.ferbator.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

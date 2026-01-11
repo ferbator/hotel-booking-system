@@ -1,4 +1,4 @@
-package com.meeweel.hotel.model;
+package org.ferbator.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

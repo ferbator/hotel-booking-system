@@ -1,8 +1,8 @@
-package com.meeweel.hotel.controller;
+package org.ferbator.controller;
 
-import com.meeweel.hotel.dto.RoomDto;
-import com.meeweel.hotel.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.ferbator.dto.RoomDto;
+import org.ferbator.service.RoomService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,7 +1,7 @@
-package com.meeweel.hotel.repo;
+package org.ferbator.repository;
 
-import com.meeweel.hotel.entity.Hotel;
+import org.ferbator.entity.Hotel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface HotelRepo extends JpaRepository<Hotel, Long> {
+public interface HotelRepository extends JpaRepository<Hotel, Long> {
 }

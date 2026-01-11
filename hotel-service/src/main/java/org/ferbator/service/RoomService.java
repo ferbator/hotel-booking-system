@@ -1,13 +1,15 @@
-package com.meeweel.hotel.service;
+package org.ferbator.service;
 
-import com.meeweel.hotel.dto.RoomDto;
-import com.meeweel.hotel.entity.ReservationStatus;
-import com.meeweel.hotel.entity.Room;
-import com.meeweel.hotel.entity.RoomReservation;
-import com.meeweel.hotel.repo.RoomRepository;
-import com.meeweel.hotel.repo.RoomReservationRepo;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.ferbator.dto.RoomDto;
+import org.ferbator.entity.Hotel;
+import org.ferbator.entity.Reservation;
+import org.ferbator.entity.Room;
+import org.ferbator.entity.enums.ReservationStatus;
+import org.ferbator.repository.HotelRepository;
+import org.ferbator.repository.ReservationRepository;
+import org.ferbator.repository.RoomRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +20,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RoomService {
-    private final RoomRepository rooms;
-    private final RoomReservationRepo reservations;
+    private final RoomRepository roomRepository;
+    private final HotelRepository hotelRepository;
+    private final ReservationRepository reservationRepository;
 
     public List<RoomDto> findAll() {
-        return rooms.findAll().stream()
+        return roomRepository.findAll().stream()
                 .map(
                         r -> new RoomDto(
                                 r.getId(),
@@ -35,9 +38,9 @@ public class RoomService {
     }
 
     public List<RoomDto> free(LocalDate start, LocalDate end) {
-        return rooms.findAll().stream()
+        return roomRepository.findAll().stream()
                 .filter(Room::isAvailable)
-                .filter(r -> !reservations.existsOverlap(
+                .filter(r -> !reservationRepository.existsOverlap(
                                 r.getId(),
                                 start,
                                 end,
@@ -52,10 +55,10 @@ public class RoomService {
             LocalDate start,
             LocalDate end
     ) {
-        return rooms.findAll().stream()
+        return roomRepository.findAll().stream()
                 .filter(Room::isAvailable)
                 .filter(
-                        r -> !reservations.existsOverlap(
+                        r -> !reservationRepository.existsOverlap(
                                 r.getId(),
                                 start,
                                 end,
@@ -81,22 +84,22 @@ public class RoomService {
 
     @Transactional
     public void hold(Long roomId, LocalDate start, LocalDate end, String requestId) {
-        rooms.findByIdForUpdate(roomId).orElseThrow(() -> new EntityNotFoundException("Room not found"));
+        roomRepository.findByIdForUpdate(roomId).orElseThrow(() -> new EntityNotFoundException("Room not found"));
 
-        var existing = reservations.findByRoomIdAndRequestId(roomId, requestId);
+        var existing = reservationRepository.findByRoomIdAndRequestId(roomId, requestId);
         if (existing.isPresent()) {
             var e = existing.get();
             if (e.getStatus() == ReservationStatus.HELD || e.getStatus() == ReservationStatus.CONFIRMED) return;
         }
 
-        boolean conflict = reservations.existsOverlap(
+        boolean conflict = reservationRepository.existsOverlap(
                 roomId, start, end, List.of(ReservationStatus.HELD, ReservationStatus.CONFIRMED)
         );
         if (conflict) {
             throw new IllegalStateException("Room busy for given dates");
         }
 
-        reservations.save(RoomReservation.builder()
+        reservationRepository.save(Reservation.builder()
                 .roomId(roomId).startDate(start).endDate(end)
                 .requestId(requestId).status(ReservationStatus.HELD).build());
     }
@@ -106,11 +109,11 @@ public class RoomService {
             Long roomId,
             String requestId
     ) {
-        var res = reservations.findByRoomIdAndRequestId(roomId, requestId)
+        var res = reservationRepository.findByRoomIdAndRequestId(roomId, requestId)
                 .orElseThrow(() -> new EntityNotFoundException("Hold not found"));
         if (res.getStatus() == ReservationStatus.CONFIRMED) return;
         res.setStatus(ReservationStatus.CONFIRMED);
-        var room = rooms.findById(roomId).orElseThrow();
+        var room = roomRepository.findById(roomId).orElseThrow();
         room.setTimesBooked(room.getTimesBooked() + 1);
     }
 
@@ -119,7 +122,7 @@ public class RoomService {
             Long roomId,
             String requestId
     ) {
-        var res = reservations.findByRoomIdAndRequestId(roomId, requestId);
+        var res = reservationRepository.findByRoomIdAndRequestId(roomId, requestId);
         res.ifPresent(r -> {
             if (r.getStatus() != ReservationStatus.RELEASED) r.setStatus(ReservationStatus.RELEASED);
         });
@@ -131,12 +134,25 @@ public class RoomService {
             String number,
             boolean available
     ) {
-        return rooms.save(
+        return roomRepository.save(
                 Room.builder()
                         .hotelId(hotelId)
                         .number(number)
                         .available(available)
                         .timesBooked(0)
+                        .build()
+        );
+    }
+
+    @Transactional
+    public Hotel createHotel(
+            String name,
+            String address
+    ) {
+        return hotelRepository.save(
+                Hotel.builder()
+                        .name(name)
+                        .address(address)
                         .build()
         );
     }
